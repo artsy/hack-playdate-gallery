@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run in sim",
+			"type": "shell",
+			"command": "ninja clean; ninja run",
+			"group": "build"
+		}
+	]
+}

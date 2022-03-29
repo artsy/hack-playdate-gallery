@@ -1,0 +1,16 @@
+rule compile
+    command = pdc $in $out
+
+build artsy-gallery.pdx: compile source
+
+rule open
+    command = open $in
+
+build run: open artsy-gallery.pdx
+
+rule rm
+    command = trash $in
+
+build clean: rm artsy-gallery.pdx
+
+default clean artsy-gallery.pdx run
