@@ -1,0 +1,6 @@
+# brew install netpbm
+
+for i in `ls support/artworks/*.jpg`; do
+    echo $(basename $i)
+    jpegtopnm $i | pamscale -xyfit 400 240 | pamditherbw -atkinson | pamtopng > source/images/artworks/$(basename $i .jpg).png
+done
