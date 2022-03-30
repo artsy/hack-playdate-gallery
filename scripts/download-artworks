@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+
 artworks=(
     "kunstrasen-art-rodeo-4"
     "ryan-callanan-ryca-love-is-the-drug-square-pastel"
@@ -25,7 +29,6 @@ artworks=(
 . .env
 
 for i in ${artworks[@]}; do
-    echo $i
     wget --output-document=$i.jpg https://api.artsy.net/api/v1/artwork/$i/default_image/large.jpg?xapp_token=$XAPP_TOKEN
     mv $i.jpg support/artworks/$i.jpg
 done

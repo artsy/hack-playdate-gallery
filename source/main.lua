@@ -16,22 +16,6 @@ local menuItem, error = menu:addMenuItem("Lol", function()
 end)
 
 local gfx<const> = playdate.graphics -- shorthand
-function tprint(tbl, indent)
-	if not indent then
-		indent = 0
-	end
-	for k, v in pairs(tbl) do
-		formatting = string.rep("  ", indent) .. k .. ": "
-		if type(v) == "table" then
-			print(formatting)
-			tprint(v, indent + 1)
-		elseif type(v) == "boolean" then
-			print(formatting .. tostring(v))
-		else
-			print(formatting .. v)
-		end
-	end
-end
 
 function tableLength(tbl)
 	count = 0
@@ -56,11 +40,6 @@ function setupLogoDrop()
 	dling = playdate.sound.sampleplayer.new("sounds/dling")
 end
 
-artworkIndex = 1
-artworks = playdate.file.listFiles("images/artworks/")
-artworksLength = tableLength(artworks)
-scale = 1
-
 function changeArtwork(diff)
 	artworkIndex = artworkIndex + diff
 	if artworkIndex > artworksLength then
@@ -69,8 +48,10 @@ function changeArtwork(diff)
 	if artworkIndex < 1 then
 		artworkIndex = artworksLength
 	end
-	print(artworkIndex)
 	scale = 1
+	slug = string.sub(artworks[artworkIndex], 1, -5)
+	artworkTitle = data[slug]["title"]
+	artistName = data[slug]["artistNames"]
 
 	local artworkImage = gfx.image.new("images/artworks/" .. artworks[artworkIndex])
 	assert(artworkImage)
@@ -85,8 +66,20 @@ function changeArtwork(diff)
 	artworkSprite:add()
 end
 
+function toggleInfo()
+	showInfo = not showInfo
+end
+
 function setupMain()
-	changeArtwork(1)
+	artworkIndex = 1
+	artworks = playdate.file.listFiles("images/artworks/")
+	artworksLength = tableLength(artworks)
+	scale = 1
+	showInfo = true
+
+	data = json.decodeFile("artworks.json")
+
+	changeArtwork(0)
 end
 
 -- setupLogoDrop()
@@ -117,11 +110,24 @@ function playdate.update()
 		elseif playdate.buttonJustPressed("left") then
 			changeArtwork(-1)
 		end
+		if playdate.buttonJustPressed("A") then
+			toggleInfo()
+		end
 	end
 
-	-- housekeeping
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
+
+	if showInfo then
+		x, y, w, h = 4, 4, 100, 100
+		gfx.setColor(gfx.kColorBlack)
+		gfx.fillRect(x - 1, y - 1, w + 2, h + 2)
+		gfx.setColor(gfx.kColorWhite)
+		gfx.fillRect(x, y, w, h)
+		gfx.drawTextInRect(artistName .. "\n_" .. artworkTitle .. "_", x + 2, y + 2, w - 4, h - 4)
+	end
+
+	-- playdate.drawFPS(2, 224)
 end
 
 function playdate.cranked(change, acceleratedChange)

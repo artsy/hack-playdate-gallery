@@ -1,0 +1,56 @@
+#!/usr/bin/env npx zx
+
+const slugs = [
+	'kunstrasen-art-rodeo-4',
+	'ryan-callanan-ryca-love-is-the-drug-square-pastel',
+	'tristan-eaton-versace-medusa-purple',
+	'samantha-bittman-untitled-246',
+	'xu-qu-maze-1',
+	'andy-warhol-statue-of-liberty',
+	'leonor-fini-portrait-de-femme',
+	'eve-arnold-joan-crawford-during-the-filming-of-the-best-of-everything-los-angeles',
+	'eve-arnold-clark-gable-learning-his-lines-on-the-set-of-the-misfits-reno-nevada',
+	'tsoku-maela-creation-of-a-man',
+	'saidou-dicko-cousins-actors-sprint-t-oujda',
+	'kate-garner-kate-moss-7-bronze-and-green',
+	'shadi-ghadirian-qajar-24',
+	'eve-arnold-andy-warhol-shooting-harlot-at-the-silver-factory-new-york-231-east-47th-street',
+	'karen-knorr-the-holding-of-vigilance-samode-palace-4',
+	'julian-opie-bijou-gets-undressed-number-1-8',
+	'morne-visagie-nagsweet-v',
+	'katsushika-hokusai-the-cushion-pine-at-aoyama-1',
+	'katsushika-hokusai-under-mannen-bridge-at-fukagawa',
+	'cleon-peterson-untitled-soldier-3',
+	'banksy-flying-copper-signed-10',
+]
+
+
+
+const envvars = (await $`cat .env`).stdout.split("\n")
+.filter(x => x!=="")
+.map(line => line.split('='))
+.reduce((acc, [key, value]) => {
+	acc[key] = value
+	return acc
+}, {})
+
+
+console.log({aa:envvars})
+
+const allData = {}
+for (const slug of slugs) {
+	const resp = await fetch('https://metaphysics-production.artsy.net/v2', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: envvars.AUTH,
+		},
+		body: JSON.stringify({
+			query: `query { artwork(id: "${slug}") { title artistNames }}`,
+		}),
+	})
+    allData[slug] = (await resp.json()).data.artwork
+}
+
+await fs.writeJson('support/artworks/artworks.json', allData)
+await $`cp support/artworks/artworks.json source/artworks.json`
