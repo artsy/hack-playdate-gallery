@@ -1,9 +1,9 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-import "CoreLibs/easing"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/crank"
+import "CoreLibs/nineslice"
 import "CoreLibs/ui"
 
 import "./utils"
@@ -30,9 +30,15 @@ function setGameMode(mode)
 	end
 end
 
-showFPS = true
+showFPS = false
 local function mainSetup()
 	local img = gfx.image.new("images/woop")
+
+	gfx.lockFocus(img)
+	gfx.drawTextAligned("Ⓑ️ toggle artwork info", 10, 190)
+	gfx.drawTextAligned("Ⓐ view full screen", 10, 214)
+	gfx.unlockFocus()
+
 	playdate.setMenuImage(img)
 
 	local menu = playdate.getSystemMenu()

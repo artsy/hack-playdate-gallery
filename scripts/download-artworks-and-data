@@ -10,7 +10,7 @@ const slugs = [
 	'leonor-fini-portrait-de-femme',
 	'eve-arnold-joan-crawford-during-the-filming-of-the-best-of-everything-los-angeles',
 	'eve-arnold-clark-gable-learning-his-lines-on-the-set-of-the-misfits-reno-nevada',
-	"62443bd219eded000e2e9a6f",
+	'62443bd219eded000e2e9a6f',
 	'tsoku-maela-creation-of-a-man',
 	'saidou-dicko-cousins-actors-sprint-t-oujda',
 	'kate-garner-kate-moss-7-bronze-and-green',
@@ -23,25 +23,45 @@ const slugs = [
 	'katsushika-hokusai-under-mannen-bridge-at-fukagawa',
 	'cleon-peterson-untitled-soldier-3',
 	'banksy-flying-copper-signed-10',
+	'julien-colombier-untitled-entropiques-3',
+	'jeffly-gabriela-molina-fragments-of-an-imaginary-home-clothes',
+	'felicita-maynard-untitled-vermont',
+	'jessica-taylor-bellamy-coping-mechanism',
+	'ellen-antico-human-ensemble',
+	'tizta-berhanu-overlapped',
+	'petra-cortright-warez-fireworks-crack',
+	'iryna-maksymova-she-is-a-snake-fighter',
+	'darby-milbrath-clau',
+	'danny-ferrell-living-proof',
+	'chelsea-culprit-sunflower-children',
+	'saif-azzuz-matter-of-time-til-it-burns',
+	'meghan-borah-do-you-know-how-to-pony-like-bony-maronie',
+	'agnese-guido-rose',
+	'larry-amponsah-in-darkness-he-comes-bearing-fragrance',
+	'gustavo-nazareno-assistencia',
+	'kour-pour-home-is-where-i-lay-my-rug',
+	'jacolby-satterwhite-ice-in-my-belly',
+	'delphine-desane-how-do-you-wish-to-be-remembered',
 ]
 
-
-
-const envvars = (await $`cat .env`).stdout.split("\n")
-.filter(x => x!=="")
-.map(line => line.split('='))
-.reduce((acc, [key, value]) => {
-	acc[key] = value
-	return acc
-}, {})
-
-
+const envvars = (await $`cat .env`).stdout
+	.split('\n')
+	.filter((x) => x !== '')
+	.map((line) => line.split('='))
+	.reduce((acc, [key, value]) => {
+		acc[key] = value
+		return acc
+	}, {})
 
 for (const slug of slugs) {
-	const resp = await fetch(`https://api.artsy.net/api/v1/artwork/${slug}/default_image/large.jpg?xapp_token=${envvars.XAPP_TOKEN}`)
-	await fs.writeFile(`support/artworks/${slug}.jpg`, Buffer.from(await resp.arrayBuffer()))
+	const resp = await fetch(
+		`https://api.artsy.net/api/v1/artwork/${slug}/default_image/large.jpg?xapp_token=${envvars.XAPP_TOKEN}`,
+	)
+	await fs.writeFile(
+		`support/artworks/${slug}.jpg`,
+		Buffer.from(await resp.arrayBuffer()),
+	)
 }
-
 
 const allData = {}
 for (const slug of slugs) {
@@ -55,7 +75,7 @@ for (const slug of slugs) {
 			query: `query { artwork(id: "${slug}") { title artistNames }}`,
 		}),
 	})
-    allData[slug] = (await resp.json()).data.artwork
+	allData[slug] = (await resp.json()).data.artwork
 }
 
 await fs.writeJson('support/artworks/artworks.json', allData)

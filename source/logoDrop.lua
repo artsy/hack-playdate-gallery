@@ -16,7 +16,9 @@ function LogoDrop:setup()
 end
 
 function LogoDrop:cleanup()
-	logoSprite:remove()
+	if logoSprite then
+		logoSprite:remove()
+	end
 end
 
 function LogoDrop:update()
