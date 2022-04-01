@@ -7,7 +7,7 @@ local gfx<const> = playdate.graphics -- shorthand
 
 Gallery = {}
 
-local function changeArtwork(diff)
+local function changeArtwork(diff, px, cx, nx)
 	artworkIndex = artworkIndex + diff
 	if artworkIndex > artworksLength then
 		artworkIndex = 1
@@ -15,6 +15,23 @@ local function changeArtwork(diff)
 	if artworkIndex < 1 then
 		artworkIndex = artworksLength
 	end
+
+	artworkIndexNext = artworkIndex + 1
+	if artworkIndexNext > artworksLength then
+		artworkIndexNext = 1
+	end
+	if artworkIndexNext < 1 then
+		artworkIndexNext = artworksLength
+	end
+
+	artworkIndexPrev = artworkIndex - 1
+	if artworkIndexPrev > artworksLength then
+		artworkIndex = 1
+	end
+	if artworkIndexPrev < 1 then
+		artworkIndexPrev = artworksLength
+	end
+
 	scale = 1
 	slug = string.sub(artworks[artworkIndex], 1, -5)
 	artworkTitle = data[slug]["title"]
@@ -34,7 +51,7 @@ local function changeArtwork(diff)
 	DeviceHeight = 240
 	infoBoxHeight = 44
 	amx = 10 -- artwork margin horizontal
-	amt = 6 -- artwork margin top
+	amt = 10 -- artwork margin top
 	apx = 7 -- artwork padding horizontal
 	apy = 7 -- artwork padding vertical
 
@@ -49,7 +66,7 @@ local function changeArtwork(diff)
 	artwork:setScale(scale)
 	artwork:setZIndex(300)
 	artwork:moveTo(DeviceWidth / 2, DeviceHeight / 2 - infoBoxHeight + amt + apy * 2)
-	artwork:add()
+	-- artwork:add()
 
 	if not frame then
 		frame = gfx.sprite.new()
@@ -66,12 +83,57 @@ local function changeArtwork(diff)
 		-- gfx.setColor(gfx.kColorWhite)
 		-- gfx.fillRect(x + 2, y + 2, w - 4, h - 4)
 	end
-	frame:add()
+	-- frame:add()
+	----- group sprites?
 
-	-- group sprites?
+	local artworkFullImage = gfx.image.new("images/artworks/full/" .. artworks[artworkIndex])
+	assert(artworkFullImage)
+	if artworkFull then
+		artworkFull:setImage(artworkFullImage)
+	else
+		artworkFull = gfx.sprite.new(artworkFullImage)
+	end
+	artworkFull:setScale(scale)
+	if diff == 1 then
+		artworkFull:moveTo(nx, DeviceHeight / 2)
+	elseif diff == -1 then
+		artworkFull:moveTo(px, DeviceHeight / 2)
+	else
+		artworkFull:moveTo(DeviceWidth / 2, DeviceHeight / 2)
+	end
+	artworkFull:add()
 
+	local artworkFullNextImage = gfx.image.new("images/artworks/full/" .. artworks[artworkIndexNext])
+	assert(artworkFullNextImage)
+	if artworkFullNext then
+		artworkFullNext:setImage(artworkFullNextImage)
+	else
+		artworkFullNext = gfx.sprite.new(artworkFullNextImage)
+	end
+	artworkFullNext:setScale(scale)
+	if diff == -1 then
+		artworkFullNext:moveTo(cx, DeviceHeight / 2)
+	end
+	artworkFullNext:moveTo(artworkFull.x + DeviceWidth, DeviceHeight / 2)
+	artworkFullNext:add()
+
+	local artworkFullPrevImage = gfx.image.new("images/artworks/full/" .. artworks[artworkIndexPrev])
+	assert(artworkFullPrevImage)
+	if artworkFullPrev then
+		artworkFullPrev:setImage(artworkFullPrevImage)
+	else
+		artworkFullPrev = gfx.sprite.new(artworkFullPrevImage)
+	end
+	artworkFullPrev:setScale(scale)
+	if diff == 1 then
+		artworkFullPrev:moveTo(cx, DeviceHeight / 2)
+	else
+		artworkFullPrev:moveTo(artworkFull.x - DeviceWidth, DeviceHeight / 2)
+	end
+	artworkFullPrev:add()
 end
 
+showCrankIndicator = true
 function Gallery:setup()
 	artworkIndex = 1
 	artworks = playdate.file.listFiles("images/artworks/small/")
@@ -83,13 +145,22 @@ function Gallery:setup()
 	data = json.decodeFile("artworks.json")
 
 	changeArtwork(0)
+
+	playdate.ui.crankIndicator:start()
+	playdate.timer.performAfterDelay(2000, function()
+		showCrankIndicator = false
+	end)
 end
+
+--- add a counter, like 3/20 photos
+--- portrait layout, put the infobox on the side, and the artwork a bit to the right
+--- make the infobox smaller, fit the text
 
 function Gallery:update()
 	if playdate.buttonIsPressed("down") then
-		artwork:moveBy(0, 2)
+		artworkFull:moveBy(0, 2)
 	elseif playdate.buttonIsPressed("up") then
-		artwork:moveBy(0, -2)
+		artworkFull:moveBy(0, -2)
 	end
 	if playdate.buttonJustPressed("right") then
 		changeArtwork(1)
@@ -113,12 +184,19 @@ function Gallery:postupdate()
 		gfx.fillRect(x, y, w, h)
 		gfx.drawTextInRect(artistName .. "\n_" .. artworkTitle .. "_", x + 2, y + 2, w - 4, h - 4)
 	end
+	if showCrankIndicator then
+		playdate.ui.crankIndicator:update()
+	end
 end
 
 function Gallery:cranked(change, acceleratedChange)
-	scale = scale + change / 100
-	if scale < 0.01 then
-		scale = 0.01
+	artworkFull:moveBy(-change, 0)
+	artworkFullNext:moveBy(-change, 0)
+	artworkFullPrev:moveBy(-change, 0)
+
+	if artworkFull.x < 0 then
+		changeArtwork(1, artworkFullPrev.x, artworkFull.x, artworkFullNext.x)
+	elseif artworkFull.x > DeviceWidth then
+		changeArtwork(-1, artworkFullPrev.x, artworkFull.x, artworkFullNext.x)
 	end
-	artwork:setScale(scale)
 end

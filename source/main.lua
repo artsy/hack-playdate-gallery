@@ -36,7 +36,8 @@ local function mainSetup()
 
 	gfx.lockFocus(img)
 	gfx.drawTextAligned("Ⓑ️ toggle artwork info", 10, 190)
-	gfx.drawTextAligned("Ⓐ view full screen", 10, 214)
+	-- gfx.drawTextAligned("Ⓐ view full screen", 10, 214)
+	gfx.drawTextAligned("🎣 rotate me!", 10, 214)
 	gfx.unlockFocus()
 
 	playdate.setMenuImage(img)
@@ -60,7 +61,9 @@ function playdate.update()
 	gfx.sprite.update()
 	playdate.timer.updateTimers()
 
-	if gameMode == kModeGallery then
+	if gameMode == kModeLogoDrop then
+		LogoDrop:postupdate()
+	elseif gameMode == kModeGallery then
 		Gallery:postupdate()
 	end
 

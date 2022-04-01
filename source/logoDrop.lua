@@ -1,3 +1,5 @@
+import "CoreLibs/ui"
+
 import "./utils"
 
 local gfx<const> = playdate.graphics -- shorthand
@@ -24,7 +26,7 @@ end
 function LogoDrop:update()
 	local finalY = 120
 
-	local newY = logoSprite.y + 1
+	newY = logoSprite.y + 1
 	if newY <= 120 then
 		logoSprite:moveBy(0, 2)
 		if newY == 111 then
@@ -36,6 +38,9 @@ function LogoDrop:update()
 			end)
 		end
 	end
+end
+
+function LogoDrop:postupdate()
 end
 
 function LogoDrop:cranked(change, acceleratedChange)

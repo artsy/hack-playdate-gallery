@@ -9,38 +9,26 @@ const slugs = [
 	'andy-warhol-statue-of-liberty',
 	'leonor-fini-portrait-de-femme',
 	'eve-arnold-joan-crawford-during-the-filming-of-the-best-of-everything-los-angeles',
-	'eve-arnold-clark-gable-learning-his-lines-on-the-set-of-the-misfits-reno-nevada',
 	'62443bd219eded000e2e9a6f',
 	'tsoku-maela-creation-of-a-man',
 	'saidou-dicko-cousins-actors-sprint-t-oujda',
 	'kate-garner-kate-moss-7-bronze-and-green',
 	'shadi-ghadirian-qajar-24',
-	'eve-arnold-andy-warhol-shooting-harlot-at-the-silver-factory-new-york-231-east-47th-street',
 	'karen-knorr-the-holding-of-vigilance-samode-palace-4',
-	'julian-opie-bijou-gets-undressed-number-1-8',
 	'morne-visagie-nagsweet-v',
 	'katsushika-hokusai-the-cushion-pine-at-aoyama-1',
 	'katsushika-hokusai-under-mannen-bridge-at-fukagawa',
 	'cleon-peterson-untitled-soldier-3',
 	'banksy-flying-copper-signed-10',
-	'julien-colombier-untitled-entropiques-3',
-	'jeffly-gabriela-molina-fragments-of-an-imaginary-home-clothes',
-	'felicita-maynard-untitled-vermont',
 	'jessica-taylor-bellamy-coping-mechanism',
-	'ellen-antico-human-ensemble',
 	'tizta-berhanu-overlapped',
 	'petra-cortright-warez-fireworks-crack',
 	'iryna-maksymova-she-is-a-snake-fighter',
 	'darby-milbrath-clau',
 	'danny-ferrell-living-proof',
 	'chelsea-culprit-sunflower-children',
-	'saif-azzuz-matter-of-time-til-it-burns',
-	'meghan-borah-do-you-know-how-to-pony-like-bony-maronie',
 	'agnese-guido-rose',
-	'larry-amponsah-in-darkness-he-comes-bearing-fragrance',
 	'gustavo-nazareno-assistencia',
-	'kour-pour-home-is-where-i-lay-my-rug',
-	'jacolby-satterwhite-ice-in-my-belly',
 	'delphine-desane-how-do-you-wish-to-be-remembered',
 ]
 
@@ -78,5 +66,9 @@ for (const slug of slugs) {
 	allData[slug] = (await resp.json()).data.artwork
 }
 
-await fs.writeJson('support/artworks/artworks.json', allData)
-await $`cp support/artworks/artworks.json source/artworks.json`
+await fs.writeJson('support/artworks/artworks.json', allData, {spaces: 2})
+
+// trying to clean up. sometimes it replaces with double quotes and messes up the json, so you can use the cp command instead, and then the uni2ascii one, and compare in the git diff, and keep only the cleanups you want
+await $`uni2ascii -B -q support/artworks/artworks.json > source/artworks.json`
+// await $`cp support/artworks/artworks.json source/artworks.json`
+
