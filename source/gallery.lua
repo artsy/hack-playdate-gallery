@@ -162,9 +162,9 @@ function Gallery:update()
 		artworkFull:moveBy(0, -2)
 	end
 	if playdate.buttonJustPressed("right") then
-		changeArtwork(1)
+		changeArtwork(1, artworkFullNext.x, artworkFullPrev.x, artworkFull.x)
 	elseif playdate.buttonJustPressed("left") then
-		changeArtwork(-1)
+		changeArtwork(-1, artworkFull.x, artworkFullNext.x, artworkFullPrev.x)
 	end
 	if playdate.buttonJustPressed("B") then
 		showInfo = not showInfo
@@ -180,10 +180,14 @@ function Gallery:postupdate()
 		textWidthTitle = gfx.getSystemFont():getTextWidth("_" .. artworkTitle .. "_")
 		textWidth = math.min(math.max(textWidthArtist, textWidthTitle) + 6, DeviceWidth - 2 * amx)
 		x, y, w, h = amx, DeviceHeight - infoBoxHeight - amt, textWidth, infoBoxHeight
-		gfx.setColor(gfx.kColorBlack)
-		gfx.fillRect(x - 1, y - 1, w + 2, h + 2)
-		gfx.setColor(gfx.kColorWhite)
-		gfx.fillRect(x, y, w, h)
+		if frameStyle == "classy" then
+			gfx.setColor(gfx.kColorBlack)
+			gfx.fillRect(x - 1, y - 1, w + 2, h + 2)
+			gfx.setColor(gfx.kColorWhite)
+			gfx.fillRect(x, y, w, h)
+		elseif frameStyle == "poke" then
+			Frames.poke:drawInRect(x - 6, y - 6, w + 12, h + 12)
+		end
 		gfx.drawTextInRect(artistName .. "\n_" .. artworkTitle .. "_\n" .. artworkIndex .. "/" .. artworksLength, x + 2,
 						y + 2, w - 4, h - 4)
 		-- gfx.drawTextInRect(, 340, y + 2, 60 - amx - 4, h - 4, nil, nill,

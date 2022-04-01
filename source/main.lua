@@ -31,6 +31,7 @@ function setGameMode(mode)
 end
 
 showFPS = false
+frameStyle = "classy"
 local function mainSetup()
 	local img = gfx.image.new("images/woop")
 
@@ -43,8 +44,11 @@ local function mainSetup()
 	playdate.setMenuImage(img)
 
 	local menu = playdate.getSystemMenu()
-	local menuItem, error = menu:addCheckmarkMenuItem("Show FPS", showFPS, function()
+	menu:addCheckmarkMenuItem("Show FPS", showFPS, function()
 		showFPS = not showFPS
+	end)
+	menu:addOptionsMenuItem("Frame", {"classy", "poke"}, frameStyle, function(style)
+		frameStyle = style
 	end)
 
 	setGameMode(kModeLogoDrop)
@@ -77,5 +81,21 @@ function playdate.cranked(change, acceleratedChange)
 		LogoDrop:cranked(change, acceleratedChange)
 	elseif gameMode == kModeGallery then
 		Gallery:cranked(change, acceleratedChange)
+	end
+end
+
+function playdate.keyPressed(key)
+	if key == "1" then
+		setGameMode(kModeLogoDrop)
+	end
+	if key == "2" then
+		setGameMode(kModeGallery)
+	end
+	if key == "3" then
+		if frameStyle == "classy" then
+			frameStyle = "poke"
+		else
+			frameStyle = "classy"
+		end
 	end
 end
