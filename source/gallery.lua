@@ -49,7 +49,7 @@ local function changeArtwork(diff, px, cx, nx)
 	-- └──────────────────────────┘
 	DeviceWidth = 400
 	DeviceHeight = 240
-	infoBoxHeight = 44
+	infoBoxHeight = 64
 	amx = 10 -- artwork margin horizontal
 	amt = 10 -- artwork margin top
 	apx = 7 -- artwork padding horizontal
@@ -152,7 +152,6 @@ function Gallery:setup()
 	end)
 end
 
---- add a counter, like 3/20 photos
 --- portrait layout, put the infobox on the side, and the artwork a bit to the right
 --- make the infobox smaller, fit the text
 
@@ -177,12 +176,18 @@ end
 
 function Gallery:postupdate()
 	if showInfo then
-		x, y, w, h = amx, DeviceHeight - infoBoxHeight - amt, DeviceWidth - 2 * amx, infoBoxHeight
+		textWidthArtist = gfx.getSystemFont():getTextWidth(artistName)
+		textWidthTitle = gfx.getSystemFont():getTextWidth("_" .. artworkTitle .. "_")
+		textWidth = math.min(math.max(textWidthArtist, textWidthTitle) + 6, DeviceWidth - 2 * amx)
+		x, y, w, h = amx, DeviceHeight - infoBoxHeight - amt, textWidth, infoBoxHeight
 		gfx.setColor(gfx.kColorBlack)
 		gfx.fillRect(x - 1, y - 1, w + 2, h + 2)
 		gfx.setColor(gfx.kColorWhite)
 		gfx.fillRect(x, y, w, h)
-		gfx.drawTextInRect(artistName .. "\n_" .. artworkTitle .. "_", x + 2, y + 2, w - 4, h - 4)
+		gfx.drawTextInRect(artistName .. "\n_" .. artworkTitle .. "_\n" .. artworkIndex .. "/" .. artworksLength, x + 2,
+						y + 2, w - 4, h - 4)
+		-- gfx.drawTextInRect(, 340, y + 2, 60 - amx - 4, h - 4, nil, nill,
+		-- 				kTextAlignment.right)
 	end
 	if showCrankIndicator then
 		playdate.ui.crankIndicator:update()
